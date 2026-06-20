@@ -52,10 +52,20 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('typing', () => {
+        socket.broadcast.emit('user typing', socket.user.username);
+    });
+
+    socket.on('stop typing', () => {
+        socket.broadcast.emit('user stopped typing', socket.user.username);
+    });
+
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.user.username);
     });
 });
+
+
 
 const PORT = process.env.PORT || 9000;
 server.listen(PORT, () => {

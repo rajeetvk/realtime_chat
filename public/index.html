@@ -134,6 +134,14 @@
             border-color: var(--primary-hover);
         }
 
+        .typing-indicator {
+            padding: 0 30px 15px 30px;
+            font-size: 13px;
+            color: #818cf8;
+            font-style: italic;
+            min-height: 20px;
+        }
+
         /* Input Area */
         .input-area {
             padding: 20px 30px;
@@ -209,6 +217,8 @@
             <!-- Messages go here -->
         </div>
 
+        <div class="typing-indicator" id="typing-indicator"></div>
+
         <div class="input-area">
             <form class="form-container" id="form">
                 <input type="text" id="input" class="input-box" placeholder="Type a message..." autocomplete="off" />
@@ -272,6 +282,26 @@
         // 5. Receive a New Live Message
         socket.on('chat message', (data) => {
             appendMessage(data.username, data.text);
+        });
+
+        // --- Typing Indicator Logic ---
+        const typingIndicator = document.getElementById('typing-indicator');
+        let typingTimeout;
+
+        input.addEventListener('input', () => {
+            socket.emit('typing');
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                socket.emit('stop typing');
+            }, 2000);
+        });
+
+        socket.on('user typing', (username) => {
+            typingIndicator.innerText = `${username} is typing...`;
+        });
+
+        socket.on('user stopped typing', () => {
+            typingIndicator.innerText = '';
         });
 
         // 6. Send a Message
