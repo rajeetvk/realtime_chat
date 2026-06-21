@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +41,7 @@
             flex-direction: column;
             padding: 20px;
         }
-        
+
         .logo {
             font-size: 24px;
             font-weight: 600;
@@ -198,14 +199,23 @@
             fill: currentColor;
             transform: translateX(2px);
         }
-
     </style>
 </head>
+
 <body>
 
     <div class="sidebar">
         <div class="logo">Nexus Chat</div>
-        
+
+        <div class="online-users-container" style="flex: 1; overflow-y: auto; margin-bottom: 20px;">
+            <h3
+                style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">
+                Active Users</h3>
+            <ul id="online-users-list" style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
+                <!-- Active users go here -->
+            </ul>
+        </div>
+
         <div class="user-profile">
             <span id="current-username">Loading...</span>
             <button class="logout-btn" onclick="logout()">Logout</button>
@@ -223,7 +233,9 @@
             <form class="form-container" id="form">
                 <input type="text" id="input" class="input-box" placeholder="Type a message..." autocomplete="off" />
                 <button class="send-btn" type="submit">
-                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                    <svg viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                    </svg>
                 </button>
             </form>
         </div>
@@ -279,6 +291,27 @@
             });
         });
 
+        // --- Render Online Users List ---
+        const onlineUsersList = document.getElementById('online-users-list');
+        socket.on('online users', (usersArray) => {
+            onlineUsersList.innerHTML = '';
+            usersArray.forEach(user => {
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.alignItems = 'center';
+                li.style.gap = '10px';
+                li.style.color = user === myUsername ? '#818cf8' : '#e2e8f0';
+                li.style.fontSize = '15px';
+                li.style.fontWeight = user === myUsername ? '600' : '400';
+
+                li.innerHTML = `
+                    <span style="width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);"></span>
+                    ${user} ${user === myUsername ? '(You)' : ''}
+                `;
+                onlineUsersList.appendChild(li);
+            });
+        });
+
         // 5. Receive a New Live Message
         socket.on('chat message', (data) => {
             appendMessage(data.username, data.text);
@@ -321,4 +354,5 @@
         }
     </script>
 </body>
+
 </html>

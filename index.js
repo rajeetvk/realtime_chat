@@ -10,6 +10,11 @@ const jwt = require('jsonwebtoken');
 
 const io = new Server(server);
 
+const onlineUsers = new Map();
+
+
+
+
 // Middleware to parse incoming JSON data from forms
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -34,6 +39,8 @@ io.use((socket, next) => {
 })
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.user.username);
+    onlineUsers.set(socket.user.username, socket.id);
+    io.emit('online users', Array.from(onlineUsers.keys()));
 
     db.any('SELECT users.username, messages.text FROM messages JOIN users ON messages.user_id = users.id ORDER BY messages.created_at ASC LIMIT 50')
         .then(history => {
@@ -62,6 +69,9 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.user.username);
+
+        onlineUsers.delete(socket.user.username);
+        io.emit('online users', Array.from(onlineUsers.keys()));
     });
 });
 
