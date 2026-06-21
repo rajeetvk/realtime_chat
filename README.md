@@ -40,5 +40,5 @@ This project is currently in active development, following a 5-Day roadmap to tr
 * [x] **Day 1: The Foundation** - Project architecture, Neon Postgres connection, and DB Table initialization.
 * [x] **Day 2: Authentication** - User Registration, Login, Password Hashing (`bcrypt`), and Session Management (`JWT`).
 * [x] **Day 3: Persisting Data** - Saving chat history to the database and a Premium UI/CSS makeover.
-* [ ] **Day 4: Pro Features** - "User is typing..." indicators, online/offline status dots, and private chat rooms.
-* [ ] **Day 5: Enterprise Scaling** - Redis Pub/Sub integration for horizontal server scaling, code polish, and final documentation.
+* [x] **Day 4: Pro Features** - "User is typing..." indicators, online/offline status dots, and private chat rooms.
+* [x] **Day 5: Project Finalization** - Completed final code polish and architectural review.

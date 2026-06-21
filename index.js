@@ -58,21 +58,29 @@ io.on('connection', (socket) => {
             console.error('Error saving message:', error);
         }
     });
+    socket.on('private message', ({ targetUsername, text }) => {
+        const targetSocketId = onlineUsers.get(targetUsername);
+
+        if (targetSocketId) {
+            io.to(targetSocketId).emit('private message', { username: socket.user.username, text: text });
+            socket.emit('private message', { username: socket.user.username, text: text });
+        }
+    });
 
     socket.on('typing', () => {
-        socket.broadcast.emit('user typing', socket.user.username);
-    });
+    socket.broadcast.emit('user typing', socket.user.username);
+});
 
-    socket.on('stop typing', () => {
-        socket.broadcast.emit('user stopped typing', socket.user.username);
-    });
+socket.on('stop typing', () => {
+    socket.broadcast.emit('user stopped typing', socket.user.username);
+});
 
-    socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.user.username);
+socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.user.username);
 
-        onlineUsers.delete(socket.user.username);
-        io.emit('online users', Array.from(onlineUsers.keys()));
-    });
+    onlineUsers.delete(socket.user.username);
+    io.emit('online users', Array.from(onlineUsers.keys()));
+});
 });
 
 

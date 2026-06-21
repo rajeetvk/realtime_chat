@@ -223,6 +223,9 @@
     </div>
 
     <div class="chat-container">
+        <div id="chat-mode-indicator" style="background: rgba(99, 102, 241, 0.1); padding: 12px 30px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; color: #818cf8; text-align: center;">
+            Global Chat Room
+        </div>
         <div class="messages" id="messages">
             <!-- Messages go here -->
         </div>
@@ -293,8 +296,18 @@
 
         // --- Render Online Users List ---
         const onlineUsersList = document.getElementById('online-users-list');
+        let privateTarget = null;
+        const modeIndicator = document.getElementById('chat-mode-indicator');
+
         socket.on('online users', (usersArray) => {
             onlineUsersList.innerHTML = '';
+            
+            // If the person we were chatting with goes offline, reset to global
+            if (privateTarget && !usersArray.includes(privateTarget)) {
+                privateTarget = null;
+                modeIndicator.innerText = 'Global Chat Room';
+            }
+
             usersArray.forEach(user => {
                 const li = document.createElement('li');
                 li.style.display = 'flex';
@@ -303,11 +316,30 @@
                 li.style.color = user === myUsername ? '#818cf8' : '#e2e8f0';
                 li.style.fontSize = '15px';
                 li.style.fontWeight = user === myUsername ? '600' : '400';
+                li.style.cursor = user === myUsername ? 'default' : 'pointer';
+                li.style.padding = '6px 10px';
+                li.style.borderRadius = '8px';
+                li.style.transition = 'background 0.2s';
 
                 li.innerHTML = `
                     <span style="width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);"></span>
                     ${user} ${user === myUsername ? '(You)' : ''}
                 `;
+
+                if (user !== myUsername) {
+                    li.addEventListener('mouseenter', () => li.style.background = 'rgba(255,255,255,0.05)');
+                    li.addEventListener('mouseleave', () => li.style.background = 'transparent');
+                    
+                    li.addEventListener('click', () => {
+                        if (privateTarget === user) {
+                            privateTarget = null;
+                            modeIndicator.innerText = 'Global Chat Room';
+                        } else {
+                            privateTarget = user;
+                            modeIndicator.innerText = `🔒 Private Chat with: ${user}`;
+                        }
+                    });
+                }
                 onlineUsersList.appendChild(li);
             });
         });
@@ -315,6 +347,10 @@
         // 5. Receive a New Live Message
         socket.on('chat message', (data) => {
             appendMessage(data.username, data.text);
+        });
+
+        socket.on('private message', (data) => {
+            appendMessage(data.username, `🔒 [Private] ${data.text}`);
         });
 
         // --- Typing Indicator Logic ---
@@ -341,7 +377,11 @@
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (input.value) {
-                socket.emit('chat message', input.value);
+                if (privateTarget) {
+                    socket.emit('private message', { targetUsername: privateTarget, text: input.value });
+                } else {
+                    socket.emit('chat message', input.value);
+                }
                 input.value = '';
             }
         });
