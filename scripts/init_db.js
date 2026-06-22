@@ -21,10 +21,10 @@ async function createTables() {
       );
     `);
 
-    console.log('✅ Tables created successfully!');
+    console.log(' Tables created successfully!');
     process.exit(0); // Exit the script when finished
   } catch (error) {
-    console.error('❌ Error creating tables:', error);
+    console.error(' Error creating tables:', error);
     process.exit(1);
   }
 }
