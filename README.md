@@ -43,5 +43,20 @@ A production-ready, highly concurrent real-time chat application built with Node
    ```
 6. Open your browser and navigate to `http://localhost:9000`.
 
+## 🐳 Docker Setup
+
+You can easily containerize and run the application using Docker:
+
+1. **Build the image**:
+   ```bash
+   docker build -t realtime-chat .
+   ```
+2. **Run the container**:
+   Ensure you pass the required environment variables (like your database URL).
+   ```bash
+   docker run -p 9000:9000 --env-file .env realtime-chat
+   ```
+3. Navigate to `http://localhost:9000`.
+
 ## 🏛 Architecture Overview
 This application utilizes a strict event-driven architecture. Global messages are broadcasted to the main namespace, while private messages isolate traffic using `io.to(socket.id)` to deliver payloads exclusively to the targeted client's unique room. Authentication is enforced not just on HTTP REST endpoints, but as a middleware layer on the WebSocket handshake (`io.use`) to prevent unauthorized socket connections.
