@@ -59,4 +59,6 @@ router.post('/login', async (req, res) => {
         console.error(error);
         res.status(500).json({ error: "Server Error while login" });
     }
+});
+
 module.exports = router;
