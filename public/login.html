@@ -281,9 +281,9 @@
                 if (!res.ok) {
                     errorDiv.innerText = data.error;
                 } else {
-                    // 🎉 Save the VIP Wristband to LocalStorage!
-                    localStorage.setItem('chat_token', data.token);
-                    localStorage.setItem('chat_username', data.username);
+                    // 🎉 Save the VIP Wristband to SessionStorage!
+                    sessionStorage.setItem('chat_token', data.token);
+                    sessionStorage.setItem('chat_username', data.username);
                     
                     // Redirect to the actual chat page
                     window.location.href = '/index.html';

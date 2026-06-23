@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real-Time Chat</title>
+    <script>
+        // Check auth before page renders to prevent UI flash
+        if (!sessionStorage.getItem('chat_token') || !sessionStorage.getItem('chat_username')) {
+            window.location.replace('/login.html');
+        }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -247,12 +253,8 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         // 1. Verify User has VIP Wristband
-        const token = localStorage.getItem('chat_token');
-        const myUsername = localStorage.getItem('chat_username');
-
-        if (!token || !myUsername) {
-            window.location.href = '/login.html'; // Kick them out!
-        }
+        const token = sessionStorage.getItem('chat_token');
+        const myUsername = sessionStorage.getItem('chat_username');
 
         document.getElementById('current-username').innerText = myUsername;
 
@@ -388,8 +390,8 @@
 
         // Logout function
         function logout() {
-            localStorage.removeItem('chat_token');
-            localStorage.removeItem('chat_username');
+            sessionStorage.removeItem('chat_token');
+            sessionStorage.removeItem('chat_username');
             window.location.href = '/login.html';
         }
     </script>
